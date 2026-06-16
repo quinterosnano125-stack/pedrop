@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💝 Momento Especial 💝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5e1 50%, #e8f4f8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: backgroundShift 15s ease infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #ff1493;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2);
+        }
+
+        .subtitle {
+            color: #ff69b4;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+
+        .image-section {
+            margin: 30px 0;
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #uploadedImage {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-area {
+            border: 3px dashed #ff69b4;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffe4f0 0%, #fff0f5 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #ff1493;
+            background: linear-gradient(135deg, #ffd4e5 0%, #ffe4f0 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-area p {
+            color: #ff69b4;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin: 10px 5px;
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.5);
+        }
+
+        .button:active {
+            transform: translateY(-1px);
+        }
+
+        .qr-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #ffb6d9;
+        }
+
+        .qr-section h2 {
+            color: #ff69b4;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        #qrCode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ffb6d9;
+            border-radius: 15px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #ff1493;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.2);
+        }
+
+        .hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2em;
+            animation: fall 5s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .success-message {
+            color: #ff1493;
+            font-weight: bold;
+            margin-top: 15px;
+            padding: 15px;
+            background: #ffe4f0;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>💝 Momento Especial 💝</h1>
+            <p class="subtitle">Crea algo memorable...</p>
+        </div>
+
+        <div class="image-section">
+            <h2 style="color: #ff69b4; margin-bottom: 15px;">📸 Tu Foto</h2>
+            <div class="upload-area" id="uploadArea">
+                <p>📤 Haz clic o arrastra tu foto aquí</p>
+                <small style="color: #ff69b4;">PNG, JPG, GIF (máx. 5MB)</small>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            <div id="uploadedImage" style="display: none;"></div>
+        </div>
+
+        <div class="qr-section">
+            <h2>💌 Tu Mensaje</h2>
+            <textarea class="message-input" id="messageInput" placeholder="Escribe tu mensaje romántico aquí..." rows="4"></textarea>
+
+            <button class="button" onclick="generateQR()">✨ Generar QR</button>
+            <button class="button" onclick="downloadQR()">⬇️ Descargar QR</button>
+            <button class="button" onclick="resetPage()">🔄 Limpiar</button>
+
+            <div id="qrCode"></div>
+            <div class="success-message" id="successMessage">¡QR generado con éxito! 💕</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const messageInput = document.getElementById('messageInput');
+        const qrCodeDiv = document.getElementById('qrCode');
+        const successMessage = document.getElementById('successMessage');
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ff1493';
+            uploadArea.style.background = 'linear-gradient(135deg, #ffd4e5 0%, #ffe4f0 100%)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ff69b4';
+            uploadArea.style.background = 'linear-gradient(135deg, #ffe4f0 0%, #fff0f5 100%)';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, carga una imagen válida');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('La imagen debe ser menor a 5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadArea.style.display = 'none';
+                uploadedImage.style.display = 'block';
+                uploadedImage.innerHTML = `<img src="${e.target.result}" alt="Foto cargada" style="width: 100%; border-radius: 20px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function generateQR() {
+            const message = messageInput.value.trim();
+            if (!message) {
+                alert('Por favor, escribe un mensaje');
+                return;
+            }
+
+            qrCodeDiv.innerHTML = '';
+            successMessage.style.display = 'none';
+
+            try {
+                QRCode.toCanvas(message, {
+                    errorCorrectionLevel: 'H',
+                    type: 'image/png',
+                    quality: 0.95,
+                    margin: 1,
+                    width: 300,
+                    color: {
+                        dark: '#ff1493',
+                        light: '#ffffff'
+                    }
+                }, (err, canvas) => {
+                    if (err) {
+                        console.error('Error al generar QR:', err);
+                        alert('Error al generar el QR');
+                        return;
+                    }
+                    qrCodeDiv.appendChild(canvas);
+                    successMessage.style.display = 'block';
+                    createHearts();
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al generar el QR');
+            }
+        }
+
+        function downloadQR() {
+            const canvas = qrCodeDiv.querySelector('canvas');
+            if (!canvas) {
+                alert('Primero genera un QR');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'mi-qr-romantico.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function resetPage() {
+            fileInput.value = '';
+            messageInput.value = '';
+            uploadedImage.style.display = 'none';
+            uploadArea.style.display = 'block';
+            qrCodeDiv.innerHTML = '';
+            successMessage.style.display = 'none';
+        }
+
+        function createHearts() {
+            const hearts = document.getElementById('hearts');
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = '💕';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                hearts.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 7000);
+            }
+        }
+
+        // Crear algunos corazones al cargar la página
+        window.addEventListener('load', () => {
+            createHearts();
+        });
+    </script>
+</body>
+</html>
