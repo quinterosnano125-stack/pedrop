@@ -254,6 +254,11 @@
             margin: 20px 0;
         }
 
+        #qrCode canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
         .message-input {
             width: 100%;
             padding: 15px;
@@ -306,6 +311,17 @@
             border-radius: 10px;
             display: none;
             border-left: 5px solid #2e7d32;
+        }
+
+        .error-message {
+            color: #c62828;
+            font-weight: bold;
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid #b71c1c;
         }
 
         .divider {
@@ -416,12 +432,13 @@
 
             <div id="qrCode"></div>
             <div class="success-message" id="successMessage">¡QR generado con éxito! 💕</div>
+            <div class="error-message" id="errorMessage"></div>
         </div>
 
         <div class="divider">💝</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
@@ -429,6 +446,7 @@
         const messageInput = document.getElementById('messageInput');
         const qrCodeDiv = document.getElementById('qrCode');
         const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
 
         // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
@@ -462,12 +480,12 @@
 
         function handleFile(file) {
             if (!file.type.startsWith('image/')) {
-                alert('Por favor, carga una imagen válida');
+                showError('Por favor, carga una imagen válida');
                 return;
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                alert('La imagen debe ser menor a 5MB');
+                showError('La imagen debe ser menor a 5MB');
                 return;
             }
 
@@ -483,51 +501,63 @@
         function generateQR() {
             const message = messageInput.value.trim();
             if (!message) {
-                alert('Por favor, escribe un mensaje');
+                showError('Por favor, escribe un mensaje');
                 return;
             }
 
             qrCodeDiv.innerHTML = '';
             successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
 
             try {
-                QRCode.toCanvas(message, {
-                    errorCorrectionLevel: 'H',
-                    type: 'image/png',
-                    quality: 0.95,
-                    margin: 2,
+                // Limpiar cualquier QR anterior
+                qrCodeDiv.innerHTML = '';
+
+                // Crear nuevo QR con QRCode.js
+                new QRCode(qrCodeDiv, {
+                    text: message,
                     width: 300,
-                    color: {
-                        dark: '#2c3e7f',
-                        light: '#ffffff'
-                    }
-                }, (err, canvas) => {
-                    if (err) {
-                        console.error('Error al generar QR:', err);
-                        alert('Error al generar el QR');
-                        return;
-                    }
-                    qrCodeDiv.appendChild(canvas);
+                    height: 300,
+                    colorDark: '#2c3e7f',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                setTimeout(() => {
                     successMessage.style.display = 'block';
                     createHearts();
-                });
+                }, 100);
+
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error al generar el QR');
+                console.error('Error al generar QR:', error);
+                showError('Error al generar el QR. Intenta con un mensaje más corto.');
             }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = '❌ ' + message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 4000);
         }
 
         function downloadQR() {
             const canvas = qrCodeDiv.querySelector('canvas');
             if (!canvas) {
-                alert('Primero genera un QR');
+                showError('Primero genera un QR');
                 return;
             }
 
-            const link = document.createElement('a');
-            link.download = 'qr-cena-romantica.png';
-            link.href = canvas.toDataURL();
-            link.click();
+            try {
+                const link = document.createElement('a');
+                link.download = 'qr-cena-romantica.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                showError('Error al descargar el QR');
+                console.error('Error:', error);
+            }
         }
 
         function resetPage() {
@@ -537,6 +567,7 @@
             uploadArea.style.display = 'block';
             qrCodeDiv.innerHTML = '';
             successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
         }
 
         function createHearts() {
