@@ -324,6 +324,16 @@
             border-left: 5px solid #b71c1c;
         }
 
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            color: #2c3e7f;
+            font-size: 0.9em;
+            border-left: 5px solid #2196f3;
+        }
+
         .divider {
             display: flex;
             justify-content: center;
@@ -421,17 +431,20 @@
         </div>
 
         <div class="qr-section">
-            <h2>💌 CREA TU CÓDIGO QR</h2>
-            <textarea class="message-input" id="messageInput" placeholder="Escribe tu mensaje romántico para el código QR..."></textarea>
+            <h2>💌 GENERADOR DE QR</h2>
+            
+            <div class="info-box">
+                ✨ El QR apuntará a esta página para que tu invitada pueda ver todos los detalles
+            </div>
 
             <div class="buttons-container">
-                <button class="button" onclick="generateQR()">✨ Generar QR</button>
+                <button class="button" onclick="generateQRForPage()">✨ Generar QR de la Página</button>
                 <button class="button" onclick="downloadQR()">⬇️ Descargar QR</button>
                 <button class="button" onclick="resetPage()">🔄 Limpiar</button>
             </div>
 
             <div id="qrCode"></div>
-            <div class="success-message" id="successMessage">¡QR generado con éxito! 💕</div>
+            <div class="success-message" id="successMessage">¡QR generado con éxito! 💕 Cuando lo escaneen irán a esta página</div>
             <div class="error-message" id="errorMessage"></div>
         </div>
 
@@ -444,12 +457,12 @@
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const uploadedImage = document.getElementById('uploadedImage');
-        const messageInput = document.getElementById('messageInput');
         const qrCodeDiv = document.getElementById('qrCode');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         
         let qrCode = null;
+        const pageURL = 'https://quinterosnano125-stack.github.io/pedrop/';
 
         // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
@@ -501,13 +514,7 @@
             reader.readAsDataURL(file);
         }
 
-        function generateQR() {
-            const message = messageInput.value.trim();
-            if (!message) {
-                showError('Por favor, escribe un mensaje');
-                return;
-            }
-
+        function generateQRForPage() {
             qrCodeDiv.innerHTML = '';
             successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
@@ -516,7 +523,7 @@
                 qrCode = new QRCodeStyling({
                     width: 300,
                     height: 300,
-                    data: message,
+                    data: pageURL,
                     image: "",
                     margin: 10,
                     qrOptions: {
@@ -547,7 +554,7 @@
 
             } catch (error) {
                 console.error('Error al generar QR:', error);
-                showError('Error al generar el QR. Intenta con un mensaje más corto.');
+                showError('Error al generar el QR.');
             }
         }
 
@@ -575,7 +582,6 @@
 
         function resetPage() {
             fileInput.value = '';
-            messageInput.value = '';
             uploadedImage.style.display = 'none';
             uploadArea.style.display = 'block';
             qrCodeDiv.innerHTML = '';
