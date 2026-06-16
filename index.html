@@ -254,7 +254,7 @@
             margin: 20px 0;
         }
 
-        #qrCode canvas {
+        #qrCode img {
             max-width: 100%;
             height: auto;
         }
@@ -438,7 +438,8 @@
         <div class="divider">💝</div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.min.js"></script>
     <script>
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
@@ -447,6 +448,8 @@
         const qrCodeDiv = document.getElementById('qrCode');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
+        
+        let qrCode = null;
 
         // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
@@ -510,19 +513,33 @@
             errorMessage.style.display = 'none';
 
             try {
-                // Limpiar cualquier QR anterior
-                qrCodeDiv.innerHTML = '';
-
-                // Crear nuevo QR con QRCode.js
-                new QRCode(qrCodeDiv, {
-                    text: message,
+                qrCode = new QRCodeStyling({
                     width: 300,
                     height: 300,
-                    colorDark: '#2c3e7f',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
+                    data: message,
+                    image: "",
+                    margin: 10,
+                    qrOptions: {
+                        typeNumber: 0,
+                        mode: 'Byte',
+                        errorCorrectionLevel: 'H'
+                    },
+                    imageOptions: {
+                        hideBackgroundDots: true,
+                        imageSize: 0.4,
+                        margin: 0
+                    },
+                    dotsOptions: {
+                        color: '#2c3e7f',
+                        type: 'square'
+                    },
+                    backgroundOptions: {
+                        color: '#ffffff'
+                    }
                 });
 
+                qrCode.append(qrCodeDiv);
+                
                 setTimeout(() => {
                     successMessage.style.display = 'block';
                     createHearts();
@@ -543,20 +560,16 @@
         }
 
         function downloadQR() {
-            const canvas = qrCodeDiv.querySelector('canvas');
-            if (!canvas) {
+            if (!qrCode) {
                 showError('Primero genera un QR');
                 return;
             }
 
             try {
-                const link = document.createElement('a');
-                link.download = 'qr-cena-romantica.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                qrCode.download({extension: "png"});
             } catch (error) {
+                console.error('Error al descargar:', error);
                 showError('Error al descargar el QR');
-                console.error('Error:', error);
             }
         }
 
@@ -568,6 +581,7 @@
             qrCodeDiv.innerHTML = '';
             successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
+            qrCode = null;
         }
 
         function createHearts() {
